@@ -1,0 +1,11 @@
+[flake8]
+extend-ignore = 
+    305
+    # Docstring param type doesn't match the function
+    ; DAR103
+max-line-length = 99
+
+# radon configruation
+radon-max-cc = 10
+exclude = 
+    venv

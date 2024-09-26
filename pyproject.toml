@@ -1,0 +1,30 @@
+[build-system]
+# Minimum requirement for the build system to create
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.package-data]
+mypkg = ["*.json"]
+
+[project]
+name = "fun-packaging"
+version = "0.0.0"
+authors = [
+    {name = "Morgan Sell", email = "morganpsell@gmail.com"},
+]
+description = "My package built during the Udemy Python to Production course"
+readme = "README.md"
+requires-python = ">=3.9"
+keywords = ["python"]
+license = { file = "MIT" }
+dependencies = [
+    "requests",
+    'importlib-metadata; python_version<"3.11"',
+]
+
+
+[project.optional-dependencies]
+test = ["pytest", "pytest-cov"]
+release = ["build", "twine"]
+static-code-qa = ["pre-commit"]
+dev = ["packaging2[test, release, static-code-qa]"]

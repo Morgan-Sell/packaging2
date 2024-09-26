@@ -1,0 +1,5 @@
+[black]
+line-legnth = 99
+exclude = [
+    "venv"
+]
