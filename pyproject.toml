@@ -14,7 +14,7 @@ authors = [
 ]
 description = "My package built during the Udemy Python to Production course"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.7"
 keywords = ["python"]
 license = { file = "MIT" }
 dependencies = [
