@@ -8,9 +8,10 @@ function pypi-tokens {
     echo "PROD_PYPI_TOKEN=$PROD_PYPI_TOKEN"
 }
 
-THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd)"
+THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && cd .. && pwd)"
 
 function load-dotenv {
+    echo "$THIS_DIR"
     while read -r line; do
         export "$line"
     done < <(grep -v '^#' "$THIS_DIR/.env" | grep -v '^$')
