@@ -8,7 +8,7 @@ function pypi-tokens {
     echo "PROD_PYPI_TOKEN=$PROD_PYPI_TOKEN"
 }
 
-THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && cd .. && pwd)"
+THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd)"
 
 function load-dotenv {
     echo "$THIS_DIR"
