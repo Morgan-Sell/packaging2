@@ -23,7 +23,7 @@ jobs:
           /bin/bash run.sh 
           /bin/bash run.sh publish:test
         env:
-          TEST_PYPI_TOKEN: ${{ secrets. }}
+          TEST_PYPI_TOKEN: ${{ secrets.TEST_PYPI_TOKEN }}
 
       # - name: Install dependencies
       #   run: |
