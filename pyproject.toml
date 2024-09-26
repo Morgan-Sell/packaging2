@@ -27,4 +27,4 @@ dependencies = [
 test = ["pytest", "pytest-cov"]
 release = ["build", "twine"]
 static-code-qa = ["pre-commit"]
-dev = ["packaging2[test, release, static-code-qa]"]
+dev = ["fun-packaging[test, release, static-code-qa]"]
