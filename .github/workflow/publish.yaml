@@ -7,6 +7,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   build-test-and-publish:
@@ -21,7 +22,8 @@ jobs:
           /bin/bash run.sh install
           /bin/bash run.sh 
           /bin/bash run.sh publish:test
-
+        env:
+          TEST_PYPI_TOKEN: ${{ secrets. }}
 
       # - name: Install dependencies
       #   run: |
@@ -30,3 +32,40 @@ jobs:
       # - name: Analysing the code with pylint
       #   run: |
       #     SKIP=no-commit-to-branch pre-commit run --all-files
+
+  # https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/accessing-contextual-information-about-workflow-runs
+  dump_contexts_to_log:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
+      - name: Dump job context
+        env:
+          JOB_CONTEXT: ${{ toJson(job) }}
+        run: echo "$JOB_CONTEXT"
+      - name: Dump steps context
+        env:
+          STEPS_CONTEXT: ${{ toJson(steps) }}
+        run: echo "$STEPS_CONTEXT"
+      - name: Dump runner context
+        env:
+          RUNNER_CONTEXT: ${{ toJson(runner) }}
+        run: echo "$RUNNER_CONTEXT"
+      - name: Dump strategy context
+        env:
+          STRATEGY_CONTEXT: ${{ toJson(strategy) }}
+        run: echo "$STRATEGY_CONTEXT"
+      - name: Dump matrix context
+        env:
+          MATRIX_CONTEXT: ${{ toJson(matrix) }}
+        run: echo "$MATRIX_CONTEXT"
+      - name: Dump secrets
+        env:
+          SECRETS: ${{ toJson(secrets) }}
+        run: echo "$SECRETS"
+      - name: Dump vars
+        env:
+          VARS: ${{ toJson(vars) }}
+        run: echo "$VARS"
