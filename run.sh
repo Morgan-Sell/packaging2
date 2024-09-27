@@ -11,15 +11,9 @@ function pypi-tokens {
 THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd)"
 
 function load-dotenv {
-    ENV_FILE="/home/runner/work/packaging2/.env"
-    if [[ -f "$ENV_FILE" ]]; then
-        while read -r line; do
-            export "$line"
-        done < <(grep -v '^#' "$ENV_FILE" | grep -v '^$')
-    else
-        echo "Error: .env file note found at $ENV_FILE"
-        exit 1
-    fi
+    while read -r line; do
+        export "$line"
+    done < <(grep -v '^#' "$THIS_DIR/.env" | grep -v '^$')
 }
 
 function install {
