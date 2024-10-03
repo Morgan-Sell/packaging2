@@ -7,7 +7,7 @@ find . \
     \( \
         -name "*cache*" \
         -o -name "*.dist-info" \
-        -o -name "*.egg-info" \ 
+        -o -name "*.egg-info" \
     \) \
     -not -path "./venv/*" \
     -exec rm -r {} +

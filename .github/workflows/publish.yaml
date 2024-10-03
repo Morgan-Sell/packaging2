@@ -10,7 +10,18 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-test-and-publish:
+
+  check-version-txt:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Tag with the release version
+        run: |
+          git tag $(cat version.txt)
+
+  lint-format-and-static-code-checks:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -18,20 +29,92 @@ jobs:
         uses: actions/setup-python@v3
         with:
           python-version: 3.8
-      - run: |
-          /bin/bash run.sh install
-          /bin/bash run.sh build
-          /bin/bash run.sh publish:test
+      - name: Install pre-commit
+        run: |
+          pip install pre-commit
+      - name: Lint, format, and otther static code quality checks
+        run: |
+          /bin/bash -x run.sh  lint:ci
+
+  build-wheel-and-sdist:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v3
+        with:
+          python-version: 3.8
+      - name: Tag with the release version
+        run: |
+          git tag $(cat version.txt)
+      - name: Install build CLI
+        run: |
+          pip install build
+      - name: Build Python package
+        run: |
+          /bin/bash -x run.sh build
+      - name: Upload package artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: wheel-and-sdist
+          path: ./dist/*
+
+  execute-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v3
+        with:
+          python-version: 3.8
+      - name: Download wheel and sdist
+        uses: actions/download-artifact@v3
+        with:
+          name: wheel-and-sdist
+          path: ./dist/
+      - name: Install test dependencies
+        run: |
+          pip install pytest pytest-cov ./dist/*.whl
+      - name: Lint, format, and otther static code quality checks
+        run: |
+          /bin/bash -x run.sh  test:ci
+  
+  publish:
+    needs:
+      - execute-tests
+      - build-wheel-and-sdist
+      - lint-format-and-static-code-checks
+      - check-version-txt
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v3
+        with:
+          python-version: 3.8
+      - name: Download wheel and sdist
+        uses: actions/download-artifact@v3
+        with:
+          name: wheel-and-sdist
+          path: ./dist/
+      - name: Install twine
+        run: |
+          pip install twine
+      - name: Publish to TestPyPi
+        run: |
+          /bin/bash -x run.sh publish:test
         env:
           TEST_PYPI_TOKEN: ${{ secrets.TEST_PYPI_TOKEN }}
+      - name: Publish to Prod PyPi
+        run: |
+          /bin/bash -x run.sh publish:prod
+        env:
+          PROD_PYPI_TOKEN: ${{ secrets.PROD_PYPI_TOKEN }}
+      - name: Push Tags
+        run: |
+          git push origin --tags
 
-      # - name: Install dependencies
-      #   run: |
-      #     python -m pip install --upgrade pip
-      #     pip install pre-commit
-      # - name: Analysing the code with pylint
-      #   run: |
-      #     SKIP=no-commit-to-branch pre-commit run --all-files
 
   # https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/accessing-contextual-information-about-workflow-runs
   dump_contexts_to_log:
