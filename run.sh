@@ -74,18 +74,7 @@ function test:wheel-locally {
     pip install build
     build
 
-    PYTEST_EXIT_STATUS=0
-    pip install ./dist/*.whl pytest pytest-cov
-    INSTALLED_PKG_DIR="$(python -c 'import packaging2; print(packaging2.__path__[0])')"
-    python -m pytest "${@:-$THIS_DIR/tests/}" \
-        --cov "$INSTALLED_PKG_DIR" \
-        --cov-report html \
-        --cov-report term \
-        --cov-report xml \
-        --junit-xml "$THIS_DIR/test-reports/report.xml" \
-        --cov-fail-under 60 || ((PYTEST_EXIT_STATUS+=$?))
-    mv coverage.xml "$THIS_DIR/test-reports/"
-    mv htmlcov "$THIS_DIR/test-reports/"
+    test:ci
 
     deactivate
     return $PYTEST_EXIT_STATUS
@@ -95,7 +84,6 @@ function test:wheel-locally {
 function test:ci {
 
     PYTEST_EXIT_STATUS=0
-    pip install ./dist/*.whl pytest pytest-cov
     INSTALLED_PKG_DIR="$(python -c 'import packaging2; print(packaging2.__path__[0])')"
     python -m pytest "${@:-$THIS_DIR/tests/}" \
         --cov "$INSTALLED_PKG_DIR" \
@@ -107,9 +95,7 @@ function test:ci {
     mv coverage.xml "$THIS_DIR/test-reports/"
     mv htmlcov "$THIS_DIR/test-reports/"
 
-    deactivate
     return $PYTEST_EXIT_STATUS
-
 }
 
 function serve-coverage-report {
